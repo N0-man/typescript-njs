@@ -1,3 +1,28 @@
+// function getCookiePayload(name: string, value: string, validHours: number): string {
+function getCookiePayload(name, value) {
+  // const date = new Date();
+  // date.setTime(date.getTime() + validHours * 1000 * 60 * 60);
+  // const dateTime = date.getTime();
+
+  // return the cookie
+  // return `${name}=${value}; expires=${date.toUTCString()}; path=/njs`;
+  return `${name}=${value}; path=/njs`;
+}
+
+// function addLoginCookie(r: NginxHTTPRequest, data: string | Buffer, flags: NginxHTTPSendBufferOptions) {
+function addLoginCookie(r, data, flags) {
+  response += data;
+
+    if (flags.last) {
+        const signature = `${r.headersIn['User-Agent']}${r.remoteAddress}`;
+        const injectedResponse = response.replace(
+            /<\/head>/,
+            `<script>document.cookie="${getCookiePayload('login', 'success')}"</script></head>`,
+        );
+        r.sendBuffer(injectedResponse, flags);
+    }
+}
+
 function summary(r) {
   var a, s, h
 
