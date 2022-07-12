@@ -4,22 +4,20 @@ function getCookiePayload(name: string, value: string): string {
 
 let response = '';
 function addLoginCookie(
-  r: NginxHTTPRequest,
+  request: NginxHTTPRequest,
   data: string | Buffer,
   flags: NginxHTTPSendBufferOptions,
 ) {
   response += data;
-
   if (flags.last) {
-    const signature = `${r.headersIn['User-Agent']}${r.remoteAddress}`;
-    const injectedResponse = response.replace(
+    const scriptInjectedResponse = response.replace(
       /<\/head>/,
       `<script>document.cookie="${getCookiePayload(
         'login',
         'success',
       )}"</script></head>`,
     );
-    r.sendBuffer(injectedResponse, flags);
+    request.sendBuffer(scriptInjectedResponse, flags);
   }
 }
 
@@ -32,42 +30,51 @@ function haveLoginCookie(cookies: string | undefined) {
   );
 }
 
-function summary(r: NginxHTTPRequest) {
-  if (haveLoginCookie(r.headersIn.Cookie)) {
-    var a, s, h;
+function summary(request: NginxHTTPRequest) {
+  if (haveLoginCookie(request.headersIn.Cookie)) {
+    let summary: string;
 
-    s = 'JS summary\n\n';
+    summary = 'JS summary\n\n';
+    summary += 'Method: ' + request.method + '\n';
+    summary += 'HTTP version: ' + request.httpVersion + '\n';
+    summary += 'Host: ' + request.headersIn.host + '\n';
+    summary += 'Remote Address: ' + request.remoteAddress + '\n';
+    summary += 'URI: ' + request.uri + '\n';
+    summary += extractHeaders() + extractArguments() + extractCookies();
 
-    s += 'Method: ' + r.method + '\n';
-    s += 'HTTP version: ' + r.httpVersion + '\n';
-    s += 'Host: ' + r.headersIn.host + '\n';
-    s += 'Remote Address: ' + r.remoteAddress + '\n';
-    s += 'URI: ' + r.uri + '\n';
+    request.status = 200;
+    request.headersOut['Content-Type'] = 'text/plain; charset=utf-8';
+    request.sendHeader();
+    request.send(summary);
 
-    s += 'Headers:\n';
-    for (h in r.headersIn) {
-      s += "  header '" + h + "' is '" + r.headersIn[h] + "'\n";
-    }
-
-    s += 'Args:\n';
-    for (a in r.args) {
-      s += "  arg '" + a + "' is '" + r.args[a] + "'\n";
-    }
-
-    const cookies = r.headersIn.Cookie;
-    const njsCookies = cookies && cookies.split(';').map((v) => v.split('='));
-
-    s += 'Cookies:\n';
-    s += njsCookies;
-
-    r.status = 200;
-    r.headersOut['Content-Type'] = 'text/plain; charset=utf-8';
-    r.sendHeader();
-    r.send(s);
-
-    r.finish();
+    request.finish();
   } else {
-    r.internalRedirect('/error');
+    request.internalRedirect('/error');
+  }
+
+  function extractHeaders() {
+    let headers = 'Headers:\n';
+    for (const h in request.headersIn) {
+      headers += "  header '" + h + "' is '" + request.headersIn[h] + "'\n";
+    }
+    return headers;
+  }
+
+  function extractCookies() {
+    if (request.headersIn.Cookie) {
+      return (
+        'Cookies:\n' +
+        request.headersIn.Cookie.split(';').map((v) => v.split('='))
+      );
+    } else return 'Cookies: NaN';
+  }
+
+  function extractArguments() {
+    let args = 'Args:\n';
+    for (const a in request.args) {
+      args += "  arg '" + a + "' is '" + request.args[a] + "'\n";
+    }
+    return args;
   }
 }
 
