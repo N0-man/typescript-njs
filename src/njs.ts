@@ -1,10 +1,4 @@
 function getCookiePayload(name: string, value: string): string {
-  // const date = new Date();
-  // date.setTime(date.getTime() + validHours * 1000 * 60 * 60);
-  // const dateTime = date.getTime();
-
-  // return the cookie
-  // return `${name}=${value}; expires=${date.toUTCString()}; path=/njs`;
   return `${name}=${value}; path=/njs; SameSite=None;`;
 }
 
@@ -77,6 +71,4 @@ function summary(r: NginxHTTPRequest) {
   }
 }
 
-const njs = { summary, addLoginCookie };
-
-export default njs;
+export default { summary, addLoginCookie };
