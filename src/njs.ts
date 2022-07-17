@@ -78,4 +78,8 @@ function summary(request: NginxHTTPRequest) {
   }
 }
 
-export default { summary, addLoginCookie };
+function testFunction() {
+  return 'test';
+}
+
+export default { summary, addLoginCookie, testFunction };
