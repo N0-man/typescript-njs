@@ -2,9 +2,14 @@
   "compilerOptions": {
     "target": "ES5",
     "module": "es2015",
-    "lib": ["ES2015", "ES2016.Array.Include", "ES2017.Object", "ES2017.String"],
-
+    "lib": [
+      "ES2015",
+      "ES2016.Array.Include",
+      "ES2017.Object",
+      "ES2017.String"
+    ],
     "strict": true,
+    "esModuleInterop": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -12,12 +17,14 @@
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-
     "moduleResolution": "node",
-
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["./src"],
-  "files": ["./node_modules/njs-types/ngx_http_js_module.d.ts"]
+  "include": [
+    "./src"
+  ],
+  "files": [
+    "./node_modules/njs-types/ngx_http_js_module.d.ts"
+  ]
 }

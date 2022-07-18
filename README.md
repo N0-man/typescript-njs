@@ -1,6 +1,6 @@
 # When typescript meets NGINX 🧨
 
-> This is what happens with NGINX when you have more sophisticated requirements before routing or load balancing e.g. simple bot protection, cookie validation, header based custom routing etc
+> This is how NGINX reacts when you have more sophisticated routing or load balancing requirements e.g. simple bot protection, cookie validation, header based custom routing etc
 
 ![](https://media.giphy.com/media/CObaaVoCUZyiqCNKoG/giphy.gif)
 
