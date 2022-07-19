@@ -1,3 +1,5 @@
+import { createMock } from 'ts-auto-mock';
+import { On, method } from "ts-auto-mock/extension";
 import njs from './njs';
 
 describe('testing jest on typescript', () => {
@@ -6,56 +8,46 @@ describe('testing jest on typescript', () => {
   });
 
   test('test summary', () => {
-    const summary = njs.summary(mockRequest())
+    const expectedSummary = getExpectedSummary()
+    const mockRequest: NginxHTTPRequest = createMock<NginxHTTPRequest>({
+      args: {
+        test: "123"
+      },
+      headersIn: {
+        'Cookie': "login=success",
+        'host': 'local.test'
+      },
+      method: "GET",
+      uri: "http://localhost",
+      remoteAddress: "localhost",
+      httpVersion: "007"
+    });
+    const mockSendHeader = On(mockRequest).get(method(request => request.sendHeader));
+    const mockSend = On(mockRequest).get(method(request => request.send));
+    const mockFinish = On(mockRequest).get(method(request => request.finish));
+    njs.summary(mockRequest)
+    expect(mockSendHeader).toHaveBeenCalledTimes(1);
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(mockFinish).toHaveBeenCalledTimes(1);
+    expect(mockSend).toHaveBeenCalledWith(expectedSummary);
   })
 });
 
-function mockRequest(): NginxHTTPRequest {
-  const request: NginxHTTPRequest = {
-    args: undefined,
-    done: function (): void {
-      throw new Error('Function not implemented.');
-    },
-    error: function (message: NjsStringOrBuffer): void {
-      throw new Error('Function not implemented.');
-    },
-    finish: function (): void {
-      throw new Error('Function not implemented.');
-    },
-    headersIn: undefined,
-    headersOut: undefined,
-    httpVersion: undefined,
-    internalRedirect: function (uri: NjsStringOrBuffer): void {
-      throw new Error('Function not implemented.');
-    },
-    log: function (message: NjsStringOrBuffer): void {
-      throw new Error('Function not implemented.');
-    },
-    method: undefined,
-    remoteAddress: undefined,
-    return: function (status: number, body?: NjsStringOrBuffer | undefined): void {
-      throw new Error('Function not implemented.');
-    },
-    send: function (part: NjsStringOrBuffer): void {
-      throw new Error('Function not implemented.');
-    },
-    sendBuffer: function (data: NjsStringOrBuffer, options?: NginxHTTPSendBufferOptions | undefined): void {
-      throw new Error('Function not implemented.');
-    },
-    sendHeader: function (): void {
-      throw new Error('Function not implemented.');
-    },
-    status: 0,
-    subrequest: function (uri: NjsStringOrBuffer, options: NginxSubrequestOptions & { detached: true; }): void {
-      throw new Error('Function not implemented.');
-    },
-    uri: undefined,
-    rawVariables: undefined,
-    variables: undefined,
-    warn: function (message: NjsStringOrBuffer): void {
-      throw new Error('Function not implemented.');
-    }
-  }
+function getExpectedSummary() {
+  let summary: string;
 
-  return request
+  summary = 'JS summary\n\n';
+  summary += 'Method: GET\n';
+  summary += 'HTTP version: 007\n';
+  summary += 'Host: local.test\n';
+  summary += 'Remote Address: localhost\n';
+  summary += 'URI: http://localhost\n';
+  summary += 'Headers:\n';
+  summary += "  header 'Cookie' is 'login=success'\n";
+  summary += "  header 'host' is 'local.test'\n";
+  summary += 'Args:\n';
+  summary += "  arg 'test' is '123'\n";
+  summary += 'Cookies:\n';
+  summary += 'login,success';
+  return summary
 }
