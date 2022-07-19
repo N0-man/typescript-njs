@@ -11,6 +11,12 @@ Then there came [NGINX Javascript module](https://www.nginx.com/blog/harnessing-
 ## Motivation
 NJS undestand javascript in ES5. This project contains the boilerplate that allows using Typescript and any node library which is then transpiled into ES5 Javascript for NJS to understand.
 
+## Tech stack
+- [ts-auto-mock](https://typescript-tdd.github.io/ts-auto-mock/): Typescript mocking library
+- [NJS](https://nginx.org/en/docs/njs/index.html): Nginx Javascript module
+- [rollup.js](https://rollupjs.org/guide/en/): Module bundler and transpiler
+- [ts-jest](https://kulshekhar.github.io/ts-jest/): Testing Typescript with jest
+
 ## Installation
 
 1. Build docker image:
